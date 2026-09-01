@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antes de vernos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#EEE3CE;
+  --card:#FBF6E9;
+  --ink:#2B2620;
+  --ink-soft:#7C7060;
+  --moss:#4B6B4E;
+  --moss-deep:#34492F;
+  --ember:#BE5A3A;
+  --ember-deep:#8C4429;
+  --dusk:#6B5580;
+  --dusk-deep:#4F3D63;
+  --slate:#4F6B78;
+  --line:#DBC9A3;
+  --danger:#A6402E;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Work Sans', sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* ambient moving background */
+.bg-blobs{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+.bg-blobs .blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(70px);
+  opacity:0.35;
+  will-change:transform;
+}
+.bg-blobs .blob-a{
+  width:520px; height:520px;
+  top:-140px; left:-120px;
+  background:var(--moss);
+  animation:driftA 26s ease-in-out infinite;
+}
+.bg-blobs .blob-b{
+  width:460px; height:460px;
+  bottom:-160px; right:-100px;
+  background:var(--ember);
+  animation:driftB 32s ease-in-out infinite;
+}
+.bg-blobs .blob-c{
+  width:400px; height:400px;
+  top:38%; right:15%;
+  background:var(--dusk);
+  animation:driftC 22s ease-in-out infinite;
+}
+@keyframes driftA{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(60px,50px) scale(1.12); }
+}
+@keyframes driftB{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(-50px,-40px) scale(1.08); }
+}
+@keyframes driftC{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(-40px,30px) scale(0.92); }
+}
+@media (prefers-reduced-motion: reduce){
+  .bg-blobs .blob{ animation:none; }
+}
+@media (max-width:640px){
+  .bg-blobs .blob{ opacity:0.22; }
+}
+
+.wrap{
+  max-width:700px;
+  margin:0 auto;
+  padding:48px 24px 96px;
+  position:relative;
+  z-index:1;
+}
+@media (max-width:520px){ .wrap{ padding:32px 16px 72px; } section.block{ padding-left:12px; } }
+
+header.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  margin-bottom:8px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:20px;
+}
+
+.brand h1{
+  font-family:'Fraunces', serif;
+  font-weight:500;
+  font-size:1.7rem;
+  margin:0 0 4px;
+  color:var(--moss-deep);
+  letter-spacing:-0.01em;
+}
+.brand p{
+  margin:0;
+  font-size:0.92rem;
+  color:var(--ink-soft);
+  max-width:36ch;
+}
+
+nav.views{ display:flex; gap:8px; flex-shrink:0; }
+nav.views button{
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  font-family:'Work Sans', sans-serif;
+  font-size:0.85rem;
+  padding:9px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+nav.views button.active{
+  background:var(--moss);
+  border-color:var(--moss);
+  color:#fff;
+}
+nav.views button:not(.active):hover{ border-color:var(--dusk); color:var(--ink); }
+
+/* signature breathing divider */
+.breath{
+  height:34px;
+  margin:36px 0 28px;
+  display:flex;
+  align-items:center;
+}
+.breath path{
+  stroke-dasharray:6 10;
+  animation:flow 5s linear infinite;
+}
+@keyframes flow{
+  to{ stroke-dashoffset:-160; }
+}
+@media (prefers-reduced-motion: reduce){
+  .breath path{ animation:none; }
+}
+.breath svg{ width:100%; height:100%; display:block; }
+
+section.block{ margin-bottom:6px; padding-left:18px; border-left:3px solid var(--line); }
+section.block.tone-moss{ border-left-color:var(--moss); }
+section.block.tone-moss h2{ color:var(--moss-deep); }
+section.block.tone-ember{ border-left-color:var(--ember); }
+section.block.tone-ember h2{ color:var(--ember-deep); }
+section.block.tone-dusk{ border-left-color:var(--dusk); }
+section.block.tone-dusk h2{ color:var(--dusk-deep); }
+section.block.tone-ink{ border-left-color:var(--ink-soft); }
+section.block.tone-ink h2{ color:var(--ink); }
+section.block h2{
+  font-family:'Fraunces', serif;
+  font-weight:500;
+  font-size:1.2rem;
+  margin:0 0 4px;
+}
+section.block > p.hint{
+  margin:0 0 18px;
+  font-size:0.88rem;
+  color:var(--ink-soft);
+}
+
+.field{ margin-bottom:18px; }
+.intro .field label{ font-family:'Fraunces', serif; font-size:1.02rem; font-weight:500; color:var(--moss-deep); margin-bottom:4px; }
+.intro .field p{ margin:0; font-size:0.92rem; color:var(--ink); }
+.field label{
+  display:block;
+  font-size:0.86rem;
+  font-weight:500;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+.field .sub{
+  font-weight:400;
+  color:var(--ink-soft);
+  font-size:0.8rem;
+  display:block;
+  margin-top:2px;
+}
+
+input[type=text], input[type=number], input[type=tel], input[type=date], textarea{
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:8px;
+  padding:11px 13px;
+  font-family:'Work Sans', sans-serif;
+  font-size:0.95rem;
+  color:var(--ink);
+  resize:vertical;
+}
+textarea{ min-height:70px; }
+input:focus, textarea:focus{
+  outline:2px solid var(--moss);
+  outline-offset:1px;
+  border-color:var(--moss);
+}
+
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:520px){ .row2{ grid-template-columns:1fr; } }
+
+.pillgroup{ display:flex; flex-wrap:wrap; gap:8px; }
+.pill{
+  border:1px solid var(--line);
+  background:var(--card);
+  padding:9px 14px;
+  border-radius:20px;
+  font-size:0.86rem;
+  cursor:pointer;
+  color:var(--ink-soft);
+  transition:all .15s ease;
+  user-select:none;
+}
+.pill:hover{ border-color:var(--dusk); transform:translateY(-1px); }
+.pill.selected{ animation:pop .28s ease; }
+@keyframes pop{
+  0%{ transform:scale(1); }
+  40%{ transform:scale(1.08); }
+  100%{ transform:scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .pill.selected{ animation:none; }
+  .pill:hover{ transform:none; }
+}
+.pill.selected{
+  background:var(--moss);
+  border-color:var(--moss);
+  color:#fff;
+}
+.pill.selected.multi{ background:var(--dusk); border-color:var(--dusk); }
+
+.scale{ display:flex; gap:6px; }
+.scale .pill{ flex:1; text-align:center; padding:10px 4px; font-size:0.78rem; border-width:1.5px; }
+.scale .pill[data-temp="0"]{ border-color:#4F6B78; background:#4F6B7815; }
+.scale .pill[data-temp="1"]{ border-color:#5C7565; background:#5C756515; }
+.scale .pill[data-temp="2"]{ border-color:#4B6B4E; background:#4B6B4E15; }
+.scale .pill[data-temp="3"]{ border-color:#96633F; background:#96633F15; }
+.scale .pill[data-temp="4"]{ border-color:#BE5A3A; background:#BE5A3A15; }
+.scale .pill[data-temp="0"].selected{ background:#4F6B78; border-color:#4F6B78; }
+.scale .pill[data-temp="1"].selected{ background:#5C7565; border-color:#5C7565; }
+.scale .pill[data-temp="2"].selected{ background:#4B6B4E; border-color:#4B6B4E; }
+.scale .pill[data-temp="3"].selected{ background:#96633F; border-color:#96633F; }
+.scale .pill[data-temp="4"].selected{ background:#BE5A3A; border-color:#BE5A3A; }
+
+.checkline{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  font-size:0.88rem;
+  color:var(--ink);
+  margin-bottom:12px;
+  cursor:pointer;
+}
+.checkline input{ margin-top:3px; flex-shrink:0; }
+
+.consent-box{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:18px;
+  margin-top:6px;
+}
+
+.actions{
+  margin-top:32px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+button.primary{
+  background:var(--moss);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:13px 22px;
+  font-family:'Work Sans', sans-serif;
+  font-size:0.95rem;
+  font-weight:500;
+  cursor:pointer;
+}
+button.primary:hover{ background:var(--moss-deep); }
+button.primary:disabled{ background:var(--dusk); cursor:not-allowed; }
+.savenote{ font-size:0.82rem; color:var(--ink-soft); }
+
+/* history view */
+.hist-empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--ink-soft);
+  border:1px dashed var(--line);
+  border-radius:12px;
+}
+.hist-empty p:first-child{ font-family:'Fraunces', serif; font-size:1.1rem; color:var(--ink); margin-bottom:6px; }
+
+.hist-row{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.hist-row:hover{ border-color:var(--dusk); }
+.hist-row .who{ font-weight:500; }
+.hist-row .when{ font-size:0.8rem; color:var(--ink-soft); }
+.badge{
+  font-size:0.75rem;
+  padding:3px 10px;
+  border-radius:20px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+
+.detail{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:24px;
+  margin-bottom:16px;
+}
+.detail .backlink{
+  display:inline-block;
+  margin-bottom:16px;
+  color:var(--moss);
+  cursor:pointer;
+  font-size:0.88rem;
+}
+.detail dl{ margin:0; }
+.detail dt{
+  font-size:0.78rem;
+  text-transform:none;
+  color:var(--ink-soft);
+  margin-top:14px;
+}
+.detail dt:first-child{ margin-top:0; }
+.detail dd{ margin:2px 0 0; font-size:0.94rem; }
+.detail .delete{
+  margin-top:20px;
+  background:none;
+  border:1px solid var(--danger);
+  color:var(--danger);
+  border-radius:8px;
+  padding:8px 14px;
+  font-size:0.85rem;
+  cursor:pointer;
+}
+
+.privacy-note{
+  margin-top:40px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+  font-size:0.78rem;
+  color:var(--ink-soft);
+}
+
+/* portada */
+.portada{
+  text-align:center;
+  padding:56px 12px 20px;
+}
+.portada-art{
+  width:100%;
+  max-width:320px;
+  margin:0 auto 32px;
+}
+.portada-art svg{ width:100%; height:auto; display:block; }
+.portada-art ellipse{ animation:breathe 6s ease-in-out infinite; transform-origin:center; transform-box:fill-box; }
+.portada-art ellipse:nth-of-type(2){ animation-delay:.6s; }
+.portada-art ellipse:nth-of-type(3){ animation-delay:1.2s; }
+@keyframes breathe{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce){
+  .portada-art ellipse{ animation:none; }
+}
+.portada-photo-ring{
+  width:188px; height:188px; border-radius:50%;
+  background:conic-gradient(var(--moss), var(--ember), var(--dusk), var(--moss));
+  padding:4px;
+  margin:0 auto 28px;
+}
+.portada-photo{
+  width:100%; height:100%; border-radius:50%; overflow:hidden;
+  border:4px solid var(--card); background:var(--card);
+}
+.portada-photo img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(1); }
+.bio{ max-width:46ch; margin:0 auto 32px; text-align:left; }
+.bio-role{
+  font-family:'Fraunces', serif;
+  font-size:1.02rem;
+  font-weight:500;
+  color:var(--moss-deep);
+  margin:0 0 10px;
+  text-align:center;
+}
+.bio-text{ font-size:0.94rem; color:var(--ink); line-height:1.65; margin:0 0 14px; }
+.bio-affil{ font-size:0.82rem; color:var(--ink-soft); line-height:1.5; margin:0; text-align:center; }
+.bio-affil a{ color:var(--moss-deep); text-decoration:underline; text-underline-offset:2px; }
+.bio-footer{
+  margin-top:40px;
+  padding-top:28px;
+  border-top:1px solid var(--line);
+}
+.bio-footer .bio-role{ font-size:0.92rem; }
+.bio-footer .bio-text{ font-size:0.88rem; }
+.portada h1{
+  font-family:'Fraunces', serif;
+  font-weight:500;
+  font-size:2rem;
+  margin:0 0 14px;
+  color:var(--moss-deep);
+  letter-spacing:-0.01em;
+}
+.portada p.greet{
+  max-width:44ch;
+  margin:0 auto 32px;
+  font-size:1rem;
+  color:var(--ink-soft);
+  line-height:1.6;
+}
+button.ghost{
+  display:block;
+  margin:16px auto 0;
+  background:none;
+  border:none;
+  color:var(--ink-soft);
+  font-family:'Work Sans', sans-serif;
+  font-size:0.85rem;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+button.ghost:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="bg-blobs">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+</div>
+<div class="wrap">
+
+  <div id="viewPortada" class="portada">
+    <div class="portada-art">
+      <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="128" cy="118" rx="88" ry="88" fill="#4B6B4E" opacity="0.55"/>
+        <ellipse cx="196" cy="106" rx="72" ry="72" fill="#BE5A3A" opacity="0.45"/>
+        <ellipse cx="162" cy="132" rx="46" ry="46" fill="#6B5580" opacity="0.5"/>
+        <path d="M40,168 C90,150 110,190 160,178 C210,166 220,196 280,180" fill="none" stroke="#2B2620" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
+      </svg>
+    </div>
+
+    <h1>Bienvenida/o a este espacio</h1>
+
+    <p class="greet">Este espacio es tuyo. Antes de vernos, me gustaría conocerte un poco — tómate el tiempo que necesites, con tus propias palabras.</p>
+    <button class="primary" id="btnComenzar">Comenzar</button>
+    <button class="ghost" id="btnVerHistorialPortada">Ya guardé algo antes, quiero verlo</button>
+  </div>
+
+  <header class="top" id="topHeader" style="display:none;">
+    <div class="brand">
+      <h1>Antes de vernos</h1>
+      <p>Cuéntame un poco de ti para llegar a nuestro encuentro con más cuidado.</p>
+    </div>
+    <nav class="views">
+      <button id="btnNuevo" class="active">Nuevo registro</button>
+      <button id="btnHistorial">Historial</button>
+    </nav>
+  </header>
+
+  <div id="viewForm" style="display:none;"></div>
+  <div id="viewHistorial" style="display:none;"></div>
+
+  <p class="privacy-note" id="privacyNote" style="display:none;"></p>
+</div>
+
+<script>
+const ACTIVACION_LABELS = [
+  "Apagado / desconectado",
+  "Baja energía, quieto",
+  "En calma, presente",
+  "Alerta, algo activado",
+  "Desbordado / muy activado"
+];
+
+const RECURSO_OPTIONS = ["Movimiento (caminar, sacudir, estirar)", "Quietud y respiración", "Contacto con objetos o texturas", "Visualización / imaginación", "Sonido o voz", "Estar en silencio"];
+
+function breathDivider(color){
+  color = color || '#DBC9A3';
+  return `<div class="breath"><svg viewBox="0 0 700 34" preserveAspectRatio="none">
+    <path d="M0,17 C40,17 40,4 80,4 C120,4 120,30 160,30 C200,30 200,17 240,17 C280,17 280,4 320,4 C360,4 360,30 400,30 C440,30 440,17 480,17 C520,17 520,4 560,4 C600,4 600,30 640,30 C660,30 680,17 700,17"
+      fill="none" stroke="${color}" stroke-width="1.4" stroke-linecap="round"/>
+  </svg></div>`;
+}
+
+let state = {
+  nombre:"", edad:"", contacto:"", emergNombre:"", emergTel:"",
+  primeraSesion:null,
+  motivoHoy:"", activacion:null, cuerpo:"",
+  tratamiento:null, medicacion:"", historia:"",
+  ritmo:null, contactoFisico:null,
+  recursos:[],
+  consentConfidencial:false, consentEmergencia:false, consentGuardar:false, firma:"", fechaFirma:""
+};
+
+const TONE = { moss:'#4B6B4E', ember:'#BE5A3A', dusk:'#6B5580', ink:'#7C7060' };
+
+function pillGroup(name, options, multi){
+  return options.map(opt => {
+    const selected = multi ? state[name].includes(opt) : state[name] === opt;
+    return `<div class="pill ${selected ? 'selected' : ''} ${multi ? 'multi':''}" data-field="${name}" data-value="${opt}" data-multi="${!!multi}">${opt}</div>`;
+  }).join("");
+}
+
+function renderForm(){
+  const el = document.getElementById('viewForm');
+  el.innerHTML = `
+    <section class="block tone-moss">
+      <h2>Un poco sobre ti</h2>
+      <p class="hint">Solo lo necesario para ubicarte y saber a quién llamar si alguna vez hace falta.</p>
+      <div class="row2">
+        <div class="field"><label>¿Cómo te llamas?</label>
+          <input type="text" id="f_nombre" value="${state.nombre}"></div>
+        <div class="field"><label>Edad</label>
+          <input type="number" id="f_edad" value="${state.edad}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>¿Dónde te puedo contactar?</label>
+          <input type="text" id="f_contacto" value="${state.contacto}"></div>
+        <div class="field"><label>¿Es la primera vez que nos encontramos así?</label>
+          <div class="pillgroup">${pillGroup('primeraSesion', ['Sí','No'])}</div></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Alguien a quien podamos llamar si hace falta — nombre</label>
+          <input type="text" id="f_emergNombre" value="${state.emergNombre}"></div>
+        <div class="field"><label>Su teléfono</label>
+          <input type="tel" id="f_emergTel" value="${state.emergTel}"></div>
+      </div>
+    </section>
+
+    ${breathDivider(TONE.ember)}
+
+    <section class="block tone-ember">
+      <h2>¿Cómo vienes hoy?</h2>
+      <p class="hint">Con tus palabras, sin necesidad de explicarlo todo. Lo que quieras compartir está bien.</p>
+      <div class="field"><label>¿Qué te trae hoy a este espacio?</label>
+        <textarea id="f_motivoHoy">${state.motivoHoy}</textarea></div>
+      <div class="field"><label>¿Cómo sientes tu cuerpo y tu energía ahora mismo?
+          <span class="sub">No hay una respuesta correcta, solo la tuya de hoy.</span></label>
+        <div class="scale">${ACTIVACION_LABELS.map((l,i) => `<div class="pill ${state.activacion===l?'selected':''}" data-field="activacion" data-value="${l}" data-multi="false" data-temp="${i}">${l}</div>`).join("")}</div>
+      </div>
+      <div class="field"><label>¿Hay algo en tu cuerpo pidiéndote atención ahora? <span class="sub">Tensión, dolor, opresión, temblor — lo que notes, sin apurarte.</span></label>
+        <textarea id="f_cuerpo">${state.cuerpo}</textarea></div>
+    </section>
+
+    ${breathDivider(TONE.dusk)}
+
+    <section class="block tone-dusk">
+      <h2>Un poco de tu contexto</h2>
+      <p class="hint">Nada de esto es obligatorio. Compárteme solo lo que sientas que ayuda a cuidarte mejor.</p>
+      <div class="field"><label>¿Estás acompañada/o por otro profesional de salud mental?</label>
+        <div class="pillgroup">${pillGroup('tratamiento', ['Sí','No'])}</div></div>
+      <div class="field"><label>¿Tomas alguna medicación que sea importante que yo conozca?</label>
+        <input type="text" id="f_medicacion" value="${state.medicacion}"></div>
+      <div class="field"><label>¿Hay algo de tu historia que te gustaría que supiera antes de empezar?</label>
+        <textarea id="f_historia">${state.historia}</textarea></div>
+    </section>
+
+    ${breathDivider(TONE.moss)}
+
+    <section class="block tone-moss">
+      <h2>Cómo te gusta que te acompañen</h2>
+      <p class="hint">Aquí eres tú quien me guía a mí. Cuéntame qué te hace sentir sostenida/o.</p>
+
+      <div class="field"><label>¿A qué ritmo te gusta ir?</label>
+        <div class="pillgroup">${pillGroup('ritmo', ['Despacio, con pausas','Dinámico','Depende del momento'])}</div></div>
+
+      <div class="field"><label>¿Cómo te sientes con el contacto físico terapéutico? <span class="sub">(si tu práctica lo incluye)</span></label>
+        <div class="pillgroup">${pillGroup('contactoFisico', ['Sí, me siento cómoda/o','No, prefiero que no','Pregúntame cada vez'])}</div></div>
+
+      <div class="field" style="margin-bottom:0;"><label>¿Qué sueles necesitar para sentirte mejor? <span class="sub">(puedes elegir varios)</span></label>
+        <div class="pillgroup">${pillGroup('recursos', RECURSO_OPTIONS, true)}</div></div>
+    </section>
+
+    ${breathDivider(TONE.ink)}
+
+    <section class="block tone-ink">
+      <h2>Antes de guardar</h2>
+      <div class="consent-box">
+        <label class="checkline"><input type="checkbox" id="f_consentConfidencial" ${state.consentConfidencial?'checked':''}>
+          Sé que este es un espacio seguro y confidencial: lo que comparto aquí no se comparte con nadie más.</label>
+        <label class="checkline"><input type="checkbox" id="f_consentEmergencia" ${state.consentEmergencia?'checked':''}>
+          Sé que este es un espacio de acompañamiento, y que no reemplaza la atención médica o psiquiátrica en una urgencia.</label>
+        <label class="checkline"><input type="checkbox" id="f_consentGuardar" ${state.consentGuardar?'checked':''}>
+          Está bien para mí que guardes esto, para poder acompañarme mejor en lo que sigue.</label>
+        <div class="row2" style="margin-top:10px;">
+          <div class="field" style="margin-bottom:0;"><label>Tu nombre, como firma</label>
+            <input type="text" id="f_firma" value="${state.firma}"></div>
+          <div class="field" style="margin-bottom:0;"><label>Fecha</label>
+            <input type="date" id="f_fechaFirma" value="${state.fechaFirma}"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="primary" id="btnGuardar">Guardar lo que compartiste</button>
+      <span class="savenote" id="saveNote"></span>
+    </div>
+
+    <div class="bio bio-footer">
+      <p class="bio-role" style="text-align:left;">Terapeuta somática · Neurobiología relacional</p>
+      <p class="bio-text">Acompaño desde la neurociencia aplicada al vínculo, investigando por años cómo nos regulamos y sanamos en relación con otras personas. Soy Ingeniera y Coach en Programación Neurolingüística, facilito procesos transformacionales y de liderazgo transpersonal, y formo a otros profesionales en la creación de experiencias y espacios seguros — pensados especialmente para personas de alta sensibilidad.</p>
+      <p class="bio-affil" style="text-align:left;">Formo parte de la comunidad Neurosoma, junto al Instituto Newman y la <a href="https://www.traumapro.org/" target="_blank" rel="noopener">International Association of Trauma Professionals (IATP)</a>.</p>
+    </div>
+  `;
+
+  // wire text inputs
+  const bindings = {
+    f_nombre:'nombre', f_edad:'edad', f_contacto:'contacto', f_emergNombre:'emergNombre', f_emergTel:'emergTel',
+    f_motivoHoy:'motivoHoy', f_cuerpo:'cuerpo', f_medicacion:'medicacion', f_historia:'historia',
+    f_firma:'firma', f_fechaFirma:'fechaFirma'
+  };
+  Object.entries(bindings).forEach(([id, key]) => {
+    const node = document.getElementById(id);
+    if(node) node.addEventListener('input', e => { state[key] = e.target.value; });
+  });
+  document.getElementById('f_consentConfidencial').addEventListener('change', e => state.consentConfidencial = e.target.checked);
+  document.getElementById('f_consentEmergencia').addEventListener('change', e => state.consentEmergencia = e.target.checked);
+  document.getElementById('f_consentGuardar').addEventListener('change', e => state.consentGuardar = e.target.checked);
+
+  // pills
+  el.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      const field = p.dataset.field;
+      const value = p.dataset.value;
+      const multi = p.dataset.multi === 'true';
+      if(multi){
+        const idx = state[field].indexOf(value);
+        if(idx > -1) state[field].splice(idx,1); else state[field].push(value);
+      } else {
+        state[field] = state[field] === value ? null : value;
+      }
+      renderForm();
+    });
+  });
+
+  document.getElementById('btnGuardar').addEventListener('click', guardarRegistro);
+}
+
+// Funciona dentro de Claude (window.storage) y también publicada como sitio web normal (localStorage)
+const storageAdapter = {
+  async set(key, value){
+    if(typeof window.storage !== 'undefined'){
+      return window.storage.set(key, value, false);
+    }
+    try{ localStorage.setItem(key, value); return { key, value }; }
+    catch(e){ return null; }
+  },
+  async get(key){
+    if(typeof window.storage !== 'undefined'){
+      return window.storage.get(key, false);
+    }
+    const value = localStorage.getItem(key);
+    return value !== null ? { key, value } : null;
+  },
+  async delete(key){
+    if(typeof window.storage !== 'undefined'){
+      return window.storage.delete(key, false);
+    }
+    localStorage.removeItem(key);
+    return { key, deleted: true };
+  },
+  async list(prefix){
+    if(typeof window.storage !== 'undefined'){
+      return window.storage.list(prefix, false);
+    }
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
+    return { keys };
+  }
+};
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkjnjjov';
+
+async function enviarPorCorreo(record){
+  const payload = {
+    _subject: `Nuevo registro — ${record.nombre || 'sin nombre'}`,
+    'Nombre': record.nombre,
+    'Edad': record.edad,
+    'Contacto': record.contacto,
+    'A quién llamar si hace falta': [record.emergNombre, record.emergTel].filter(Boolean).join(' — '),
+    'Primera vez': record.primeraSesion,
+    'Qué la/lo trajo': record.motivoHoy,
+    'Cómo sentía su cuerpo y energía': record.activacion,
+    'Algo pidiendo atención en el cuerpo': record.cuerpo,
+    'Acompañada/o por otro profesional': record.tratamiento,
+    'Medicación': record.medicacion,
+    'Contexto que quiso compartir': record.historia,
+    'Ritmo que prefiere': record.ritmo,
+    'Contacto físico': record.contactoFisico,
+    'Qué suele necesitar': (record.recursos || []).join(', '),
+    'Firma': record.firma,
+    'Fecha de firma': record.fechaFirma,
+    'Guardado el': new Date(record.savedAt).toLocaleString('es-CO')
+  };
+  const res = await fetch(FORMSPREE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error('Formspree respondió ' + res.status);
+}
+
+async function guardarRegistro(){
+  const note = document.getElementById('saveNote');
+  if(!state.nombre.trim()){
+    note.textContent = "Antes de guardar, cuéntame cómo te llamas.";
+    note.style.color = "#A64B3B";
+    return;
+  }
+  if(!state.consentConfidencial || !state.consentEmergencia || !state.consentGuardar){
+    note.textContent = "Falta marcar las casillas de abajo para poder guardar.";
+    note.style.color = "#A64B3B";
+    return;
+  }
+  const record = { ...state, id: 'reg_' + Date.now(), savedAt: new Date().toISOString() };
+
+  let savedOk = true;
+  try{
+    const result = await storageAdapter.set('intake:' + record.id, JSON.stringify(record));
+    if(!result) savedOk = false;
+  }catch(storageErr){
+    console.error(storageErr);
+    savedOk = false;
+  }
+
+  let emailOk = true;
+  try{
+    await enviarPorCorreo(record);
+  }catch(emailErr){
+    console.error(emailErr);
+    emailOk = false;
+  }
+
+  if(!savedOk && !emailOk){
+    note.textContent = "Algo no salió bien al guardar. ¿Lo intentamos de nuevo?";
+    note.style.color = "#A6402E";
+    return;
+  }
+
+  note.textContent = savedOk && emailOk
+    ? "Listo, quedó guardado y te llegará un correo con los datos."
+    : emailOk
+      ? "Se envió el correo con los datos, aunque no quedó en el historial de la app."
+      : "Quedó guardado en el historial, pero el correo no se pudo enviar.";
+  note.style.color = savedOk && emailOk ? "#3E6B5E" : emailOk ? "#3E6B5E" : "#A6402E";
+
+  state = {
+    nombre:"", edad:"", contacto:"", emergNombre:"", emergTel:"",
+    primeraSesion:null, motivoHoy:"", activacion:null, cuerpo:"",
+    tratamiento:null, medicacion:"", historia:"",
+    ritmo:null, contactoFisico:null,
+    recursos:[],
+    consentConfidencial:false, consentEmergencia:false, consentGuardar:false, firma:"", fechaFirma:""
+  };
+  setTimeout(() => renderForm(), 700);
+}
+
+async function loadHistorial(){
+  const el = document.getElementById('viewHistorial');
+  el.innerHTML = `<p class="hint" style="color:var(--ink-soft);">Cargando…</p>`;
+  try{
+    const listing = await storageAdapter.list('intake:');
+    const keys = listing && listing.keys ? listing.keys : [];
+    if(keys.length === 0){
+      el.innerHTML = `<div class="hist-empty"><p>Todavía no hay nadie por aquí</p><p>Lo que guarden tus personas acompañadas irá apareciendo en esta lista, ordenado por fecha.</p></div>`;
+      return;
+    }
+    const records = [];
+    for(const k of keys){
+      try{
+        const r = await storageAdapter.get(k);
+        if(r && r.value) records.push(JSON.parse(r.value));
+      }catch(e){ /* skip unreadable key */ }
+    }
+    records.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
+    renderHistorialList(records);
+  }catch(err){
+    console.error(err);
+    el.innerHTML = `<p class="hint" style="color:#A64B3B;">Algo no dejó cargar el historial. ¿Probamos otra vez?</p>`;
+  }
+}
+
+function renderHistorialList(records){
+  const el = document.getElementById('viewHistorial');
+  el.innerHTML = `<div id="histList">${records.map(r => `
+    <div class="hist-row" data-id="${r.id}">
+      <div>
+        <div class="who">${r.nombre || '(sin nombre)'}</div>
+        <div class="when">${new Date(r.savedAt).toLocaleString('es-CO', {dateStyle:'medium', timeStyle:'short'})}</div>
+      </div>
+      <span class="badge">${r.activacion || 'sin marcar'}</span>
+    </div>`).join("")}</div>`;
+  el.querySelectorAll('.hist-row').forEach(row => {
+    row.addEventListener('click', () => showDetail(records.find(r => r.id === row.dataset.id)));
+  });
+}
+
+function dRow(label, value){
+  if(!value || (Array.isArray(value) && value.length===0)) return '';
+  return `<dt>${label}</dt><dd>${Array.isArray(value) ? value.join(', ') : value}</dd>`;
+}
+
+function showDetail(r){
+  const el = document.getElementById('viewHistorial');
+  el.innerHTML = `
+    <div class="detail">
+      <span class="backlink" id="backToList">← Volver</span>
+      <dl>
+        ${dRow('Nombre', r.nombre)}
+        ${dRow('Edad', r.edad)}
+        ${dRow('Contacto', r.contacto)}
+        ${dRow('A quién llamar si hace falta', [r.emergNombre, r.emergTel].filter(Boolean).join(' — '))}
+        ${dRow('Primera vez', r.primeraSesion)}
+        ${dRow('Qué la/lo trajo', r.motivoHoy)}
+        ${dRow('Cómo sentía su cuerpo y energía', r.activacion)}
+        ${dRow('Algo pidiendo atención en el cuerpo', r.cuerpo)}
+        ${dRow('Acompañada/o por otro profesional', r.tratamiento)}
+        ${dRow('Medicación', r.medicacion)}
+        ${dRow('Contexto que quiso compartir', r.historia)}
+        ${dRow('Ritmo que prefiere', r.ritmo)}
+        ${dRow('Contacto físico', r.contactoFisico)}
+        ${dRow('Qué suele necesitar', r.recursos)}
+        ${dRow('Firma', r.firma)}
+        ${dRow('Fecha de firma', r.fechaFirma)}
+        ${dRow('Guardado el', new Date(r.savedAt).toLocaleString('es-CO'))}
+      </dl>
+      <button class="delete" id="btnDelete">Eliminar este registro</button>
+    </div>
+  `;
+  document.getElementById('backToList').addEventListener('click', loadHistorial);
+  document.getElementById('btnDelete').addEventListener('click', async () => {
+    if(!confirm('¿Eliminar este registro? No hay vuelta atrás.')) return;
+    try{
+      await storageAdapter.delete('intake:' + r.id);
+      loadHistorial();
+    }catch(e){ alert('No se pudo eliminar. ¿Probamos otra vez?'); }
+  });
+}
+
+function switchView(view){
+  document.getElementById('viewPortada').style.display = view==='portada' ? 'block' : 'none';
+  document.getElementById('topHeader').style.display = view==='portada' ? 'none' : 'flex';
+  document.getElementById('privacyNote').style.display = view==='portada' ? 'none' : 'block';
+  document.getElementById('btnNuevo').classList.toggle('active', view==='form');
+  document.getElementById('btnHistorial').classList.toggle('active', view==='historial');
+  document.getElementById('viewForm').style.display = view==='form' ? 'block' : 'none';
+  document.getElementById('viewHistorial').style.display = view==='historial' ? 'block' : 'none';
+  if(view === 'historial') loadHistorial();
+}
+
+document.getElementById('btnComenzar').addEventListener('click', () => switchView('form'));
+document.getElementById('btnVerHistorialPortada').addEventListener('click', () => switchView('historial'));
+document.getElementById('btnNuevo').addEventListener('click', () => switchView('form'));
+document.getElementById('btnHistorial').addEventListener('click', () => switchView('historial'));
+document.getElementById('privacyNote').textContent = "Lo que se guarda aquí queda de forma privada en tu cuenta de Claude, visible solo cuando tú abres esta app.";
+
+renderForm();
+switchView('portada');
+</script>
+</body>
+</html>
