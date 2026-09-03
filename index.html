@@ -282,6 +282,52 @@ input:focus, textarea:focus{
   margin-top:6px;
 }
 
+.meet-box{
+  background:var(--card);
+  border:1px solid var(--ember);
+  border-radius:10px;
+  padding:16px 18px;
+  margin-top:16px;
+}
+.meet-label{
+  margin:0 0 8px;
+  font-size:0.82rem;
+  font-weight:500;
+  color:var(--ember-deep);
+}
+.meet-link-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.meet-link{
+  color:var(--ink);
+  font-size:0.9rem;
+  word-break:break-all;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  flex:1;
+  min-width:0;
+}
+.meet-copy{
+  border:1px solid var(--ember);
+  background:none;
+  color:var(--ember-deep);
+  border-radius:8px;
+  padding:7px 14px;
+  font-family:'Work Sans', sans-serif;
+  font-size:0.82rem;
+  cursor:pointer;
+  flex-shrink:0;
+}
+.meet-copy:hover{ background:var(--ember); color:#fff; }
+.meet-note{
+  margin:10px 0 0;
+  font-size:0.78rem;
+  color:var(--ink-soft);
+}
+
 .actions{
   margin-top:32px;
   display:flex;
@@ -505,14 +551,13 @@ button.ghost:hover{ color:var(--ink); }
 
 <script>
 const ACTIVACION_LABELS = [
-  "Apagado / desconectado",
-  "Baja energía, quieto",
-  "En calma, presente",
-  "Alerta, algo activado",
-  "Desbordado / muy activado"
+  "Sin energía, como apagada/o",
+  "Con poca energía, tranquila/o",
+  "En calma",
+  "Un poco inquieta/o o acelerada/o",
+  "Muy alterada/o, al límite"
 ];
 
-const RECURSO_OPTIONS = ["Movimiento (caminar, sacudir, estirar)", "Quietud y respiración", "Contacto con objetos o texturas", "Visualización / imaginación", "Sonido o voz", "Estar en silencio"];
 
 function breathDivider(color){
   color = color || '#DBC9A3';
@@ -523,16 +568,18 @@ function breathDivider(color){
 }
 
 let state = {
-  nombre:"", edad:"", contacto:"", emergNombre:"", emergTel:"",
+  nombre:"", edad:"", ocupacion:"",
   primeraSesion:null,
-  motivoHoy:"", activacion:null, cuerpo:"",
+  motivoHoy:"", activacion:[], cuerpo:"",
   tratamiento:null, medicacion:"", historia:"",
-  ritmo:null, contactoFisico:null,
-  recursos:[],
   consentConfidencial:false, consentEmergencia:false, consentGuardar:false, firma:"", fechaFirma:""
 };
 
 const TONE = { moss:'#4B6B4E', ember:'#BE5A3A', dusk:'#6B5580', ink:'#7C7060' };
+
+// ── Edita esto antes de compartir el formulario para cada sesión ──
+const MEET_LINK = 'https://meet.google.com/wph-ahfw-bpo';
+// ────────────────────────────────────────────────────────────────
 
 function pillGroup(name, options, multi){
   return options.map(opt => {
@@ -544,6 +591,21 @@ function pillGroup(name, options, multi){
 function renderForm(){
   const el = document.getElementById('viewForm');
   el.innerHTML = `
+    <section class="block tone-ember">
+      <h2>Tu sesión ya está agendada</h2>
+      <p class="hint">Aquí tienes el enlace para que lo guardes.</p>
+      <div class="meet-box">
+        <p class="meet-label">Enlace de nuestra reunión virtual</p>
+        <div class="meet-link-row">
+          <a href="${MEET_LINK}" target="_blank" rel="noopener" class="meet-link">${MEET_LINK}</a>
+          <button type="button" class="meet-copy" id="btnCopiarMeet">Copiar</button>
+        </div>
+        <p class="meet-note">Guárdalo o entra directo cuando llegue la hora.</p>
+      </div>
+    </section>
+
+    ${breathDivider(TONE.moss)}
+
     <section class="block tone-moss">
       <h2>Un poco sobre ti</h2>
       <p class="hint">Solo lo necesario para ubicarte y saber a quién llamar si alguna vez hace falta.</p>
@@ -554,16 +616,10 @@ function renderForm(){
           <input type="number" id="f_edad" value="${state.edad}"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>¿Dónde te puedo contactar?</label>
-          <input type="text" id="f_contacto" value="${state.contacto}"></div>
+        <div class="field"><label>¿A qué te dedicas actualmente?</label>
+          <input type="text" id="f_ocupacion" value="${state.ocupacion}"></div>
         <div class="field"><label>¿Es la primera vez que nos encontramos así?</label>
           <div class="pillgroup">${pillGroup('primeraSesion', ['Sí','No'])}</div></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Alguien a quien podamos llamar si hace falta — nombre</label>
-          <input type="text" id="f_emergNombre" value="${state.emergNombre}"></div>
-        <div class="field"><label>Su teléfono</label>
-          <input type="tel" id="f_emergTel" value="${state.emergTel}"></div>
       </div>
     </section>
 
@@ -576,8 +632,9 @@ function renderForm(){
         <textarea id="f_motivoHoy">${state.motivoHoy}</textarea></div>
       <div class="field"><label>¿Cómo sientes tu cuerpo y tu energía ahora mismo?
           <span class="sub">No hay una respuesta correcta, solo la tuya de hoy.</span></label>
-        <div class="scale">${ACTIVACION_LABELS.map((l,i) => `<div class="pill ${state.activacion===l?'selected':''}" data-field="activacion" data-value="${l}" data-multi="false" data-temp="${i}">${l}</div>`).join("")}</div>
+        <div class="scale">${ACTIVACION_LABELS.map((l,i) => `<div class="pill ${state.activacion.includes(l)?'selected':''}" data-field="activacion" data-value="${l}" data-multi="true" data-temp="${i}">${l}</div>`).join("")}</div>
       </div>
+      <p class="hint" style="margin:-10px 0 0;">Puedes elegir uno o varios.</p>
       <div class="field"><label>¿Hay algo en tu cuerpo pidiéndote atención ahora? <span class="sub">Tensión, dolor, opresión, temblor — lo que notes, sin apurarte.</span></label>
         <textarea id="f_cuerpo">${state.cuerpo}</textarea></div>
     </section>
@@ -593,22 +650,6 @@ function renderForm(){
         <input type="text" id="f_medicacion" value="${state.medicacion}"></div>
       <div class="field"><label>¿Hay algo de tu historia que te gustaría que supiera antes de empezar?</label>
         <textarea id="f_historia">${state.historia}</textarea></div>
-    </section>
-
-    ${breathDivider(TONE.moss)}
-
-    <section class="block tone-moss">
-      <h2>Cómo te gusta que te acompañen</h2>
-      <p class="hint">Aquí eres tú quien me guía a mí. Cuéntame qué te hace sentir sostenida/o.</p>
-
-      <div class="field"><label>¿A qué ritmo te gusta ir?</label>
-        <div class="pillgroup">${pillGroup('ritmo', ['Despacio, con pausas','Dinámico','Depende del momento'])}</div></div>
-
-      <div class="field"><label>¿Cómo te sientes con el contacto físico terapéutico? <span class="sub">(si tu práctica lo incluye)</span></label>
-        <div class="pillgroup">${pillGroup('contactoFisico', ['Sí, me siento cómoda/o','No, prefiero que no','Pregúntame cada vez'])}</div></div>
-
-      <div class="field" style="margin-bottom:0;"><label>¿Qué sueles necesitar para sentirte mejor? <span class="sub">(puedes elegir varios)</span></label>
-        <div class="pillgroup">${pillGroup('recursos', RECURSO_OPTIONS, true)}</div></div>
     </section>
 
     ${breathDivider(TONE.ink)}
@@ -645,7 +686,7 @@ function renderForm(){
 
   // wire text inputs
   const bindings = {
-    f_nombre:'nombre', f_edad:'edad', f_contacto:'contacto', f_emergNombre:'emergNombre', f_emergTel:'emergTel',
+    f_nombre:'nombre', f_edad:'edad', f_ocupacion:'ocupacion',
     f_motivoHoy:'motivoHoy', f_cuerpo:'cuerpo', f_medicacion:'medicacion', f_historia:'historia',
     f_firma:'firma', f_fechaFirma:'fechaFirma'
   };
@@ -674,6 +715,17 @@ function renderForm(){
   });
 
   document.getElementById('btnGuardar').addEventListener('click', guardarRegistro);
+
+  document.getElementById('btnCopiarMeet').addEventListener('click', async () => {
+    const btn = document.getElementById('btnCopiarMeet');
+    try{
+      await navigator.clipboard.writeText(MEET_LINK);
+      btn.textContent = 'Copiado';
+    }catch(e){
+      btn.textContent = 'No se pudo copiar';
+    }
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 1800);
+  });
 }
 
 // Funciona dentro de Claude (window.storage) y también publicada como sitio web normal (localStorage)
@@ -713,20 +765,17 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkjnjjov';
 async function enviarPorCorreo(record){
   const payload = {
     _subject: `Nuevo registro — ${record.nombre || 'sin nombre'}`,
+    'Enlace de la reunión': MEET_LINK,
     'Nombre': record.nombre,
     'Edad': record.edad,
-    'Contacto': record.contacto,
-    'A quién llamar si hace falta': [record.emergNombre, record.emergTel].filter(Boolean).join(' — '),
+    'A qué se dedica': record.ocupacion,
     'Primera vez': record.primeraSesion,
     'Qué la/lo trajo': record.motivoHoy,
-    'Cómo sentía su cuerpo y energía': record.activacion,
+    'Cómo sentía su cuerpo y energía': (record.activacion || []).join(', '),
     'Algo pidiendo atención en el cuerpo': record.cuerpo,
     'Acompañada/o por otro profesional': record.tratamiento,
     'Medicación': record.medicacion,
     'Contexto que quiso compartir': record.historia,
-    'Ritmo que prefiere': record.ritmo,
-    'Contacto físico': record.contactoFisico,
-    'Qué suele necesitar': (record.recursos || []).join(', '),
     'Firma': record.firma,
     'Fecha de firma': record.fechaFirma,
     'Guardado el': new Date(record.savedAt).toLocaleString('es-CO')
@@ -784,11 +833,9 @@ async function guardarRegistro(){
   note.style.color = savedOk && emailOk ? "#3E6B5E" : emailOk ? "#3E6B5E" : "#A6402E";
 
   state = {
-    nombre:"", edad:"", contacto:"", emergNombre:"", emergTel:"",
-    primeraSesion:null, motivoHoy:"", activacion:null, cuerpo:"",
+    nombre:"", edad:"", ocupacion:"",
+    primeraSesion:null, motivoHoy:"", activacion:[], cuerpo:"",
     tratamiento:null, medicacion:"", historia:"",
-    ritmo:null, contactoFisico:null,
-    recursos:[],
     consentConfidencial:false, consentEmergencia:false, consentGuardar:false, firma:"", fechaFirma:""
   };
   setTimeout(() => renderForm(), 700);
@@ -827,7 +874,7 @@ function renderHistorialList(records){
         <div class="who">${r.nombre || '(sin nombre)'}</div>
         <div class="when">${new Date(r.savedAt).toLocaleString('es-CO', {dateStyle:'medium', timeStyle:'short'})}</div>
       </div>
-      <span class="badge">${r.activacion || 'sin marcar'}</span>
+      <span class="badge">${(r.activacion && r.activacion.length) ? r.activacion.join(', ') : 'sin marcar'}</span>
     </div>`).join("")}</div>`;
   el.querySelectorAll('.hist-row').forEach(row => {
     row.addEventListener('click', () => showDetail(records.find(r => r.id === row.dataset.id)));
@@ -847,8 +894,7 @@ function showDetail(r){
       <dl>
         ${dRow('Nombre', r.nombre)}
         ${dRow('Edad', r.edad)}
-        ${dRow('Contacto', r.contacto)}
-        ${dRow('A quién llamar si hace falta', [r.emergNombre, r.emergTel].filter(Boolean).join(' — '))}
+        ${dRow('A qué se dedica', r.ocupacion)}
         ${dRow('Primera vez', r.primeraSesion)}
         ${dRow('Qué la/lo trajo', r.motivoHoy)}
         ${dRow('Cómo sentía su cuerpo y energía', r.activacion)}
@@ -856,9 +902,6 @@ function showDetail(r){
         ${dRow('Acompañada/o por otro profesional', r.tratamiento)}
         ${dRow('Medicación', r.medicacion)}
         ${dRow('Contexto que quiso compartir', r.historia)}
-        ${dRow('Ritmo que prefiere', r.ritmo)}
-        ${dRow('Contacto físico', r.contactoFisico)}
-        ${dRow('Qué suele necesitar', r.recursos)}
         ${dRow('Firma', r.firma)}
         ${dRow('Fecha de firma', r.fechaFirma)}
         ${dRow('Guardado el', new Date(r.savedAt).toLocaleString('es-CO'))}
